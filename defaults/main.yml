@@ -1,0 +1,16 @@
+---
+# defaults file for traefik
+traefik_version: '1.1.2'
+traefik_binary: 'traefik'
+traefik_binary_path: '/opt'
+
+traefik_config_graceTimeOut: 10
+traefik_config_debug: false
+traefik_config_checkNewVersion: true
+traefik_config_traefikLogsFile: if null, will log to STDOUT
+traefik_config_accessLogsFile: if null, will log to STDOUT
+traefik_config_logLevel: ERROR
+traefik_config_ProvidersThrottleDuration: 2
+traefik_config_MaxIdleConnsPerHost: if null will use System Default
+traefik_config_InsecureSkipVerify: false
+traefik_config_defaultEntryPoints: http
