@@ -1,0 +1,5 @@
+---
+  - name: ':: download :: Ensuring Traefik directory exists'
+    file:
+      path: "{{ traefik_binary_path }}/bin"
+      state: directory

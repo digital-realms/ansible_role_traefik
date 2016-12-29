@@ -2,7 +2,9 @@
 # defaults file for traefik
 traefik_version: '1.1.2'
 traefik_binary: 'traefik'
-traefik_binary_path: '/opt'
+traefik_binary_path: '/opt/traefik'
+traefik_config_file: 'traefik.toml'
+traefik_sysd_runlevel: 'multi-user.target'
 
 traefik_config_graceTimeOut: 10
 traefik_config_debug: false
