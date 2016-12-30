@@ -1,11 +1,11 @@
 ---
   - name: ':: download :: Downloading Traefik binary file'
     get_url:
-      url: "https://github.com/containous/traefik/releases/download/{{ traefik_version }}/{{ traefik_binary }}"
+      url: "https://github.com/containous/traefik/releases/download/v{{ traefik_version }}/{{ traefik_binary }}"
       dest: "{{ traefik_binary_path }}/{{ traefik_binary }}-{{ traefik_version }}"
       mode: 0755
 
   - file:
-      src: "{{ traefik_binary_path }}/{{ traefik_binary }}"
+      src: "{{ traefik_binary_path }}/{{ traefik_binary }}-{{ traefik_version }}"
       dest: "{{ traefik_binary_path}}/traefik"
       state: link

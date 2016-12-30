@@ -2,9 +2,12 @@
 Description=Traefik Load Balancer
 
 [Service]
-Type=simple
+Type=notify
 ExecStart={{ traefik_binary_path }}/traefik --configFile={{ traefik_config_file }}
 ExecStop={{ traefik_binary_path }}/traefik
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
+Restart=on-failure
 
 [Install]
 WantedBy={{ traefik_sysd_runlevel }}
