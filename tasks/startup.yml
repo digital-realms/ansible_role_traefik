@@ -1,0 +1,15 @@
+---
+  - name: ':: startup :: Enabling Traefik service via systemd'
+    systemd:
+      name: traefik
+      state: started
+      enabled: yes
+    when:
+      - traefik_service_systemd_enabled
+
+  - name: ':: startup :: reloading systemd'
+    systemd:
+      daemon-reload: yes
+      name: traefik
+    when:
+      - traefik_service_systemd_enabled

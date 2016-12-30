@@ -2,3 +2,5 @@
 # tasks file for traefik
  - include: dir_skeleton.yml
  - include: download.yml
+ - include: install.yml
+ - include: configuration.yml

@@ -1,0 +1,13 @@
+---
+  - set_fact:
+      traefik_config: '{{ default_traefik_config | combine(traefik_config, recursive=True) }}'
+
+  - name: ':: config :: Ensure conf directory exsists'
+    file:
+      path: '{{ traefik_binary_path}}/conf'
+      state: directory
+
+  - name: ':: config :: Apply Configuration'
+    template:
+      src: config.j2
+      dest: '{{ traefik_binary_path }}/conf/conf.toml'

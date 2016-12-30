@@ -1,5 +1,0 @@
----
-  - name: ':: config :: Apply Configuration'
-    template:
-      src: config.j2
-      dest: "{{ traefik_binary_path }}/conf/conf.toml"

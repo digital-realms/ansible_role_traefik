@@ -2,7 +2,7 @@
   - name: ':: systemd :: Applying scripts for service management'
     template:
       src: systemd-traefik.j2
-      dest: '{{ traefik_binary_path }}'
+      dest: /etc/systemd/user/traefik.service
       owner: root
       group: root
       mode: 0755
