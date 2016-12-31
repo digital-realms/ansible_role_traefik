@@ -1,11 +1,16 @@
 ---
+  - name: ':: download :: Ensuring Traefik directory exists'
+    file:
+      path: '{{ traefik_binary_path }}/bin'
+      state: directory
+
   - name: ':: download :: Downloading Traefik binary file'
     get_url:
       url: 'https://github.com/containous/traefik/releases/download/v{{ traefik_version }}/{{ traefik_binary }}'
-      dest: '{{ traefik_binary_path }}/{{ traefik_binary }}-{{ traefik_version }}'
+      dest: '{{ traefik_binary_path }}/bin/{{ traefik_binary }}-{{ traefik_version }}'
       mode: 0755
 
   - file:
-      src: '{{ traefik_binary_path }}/{{ traefik_binary }}-{{ traefik_version }}'
-      dest: '{{ traefik_binary_path}}/traefik'
+      src: '{{ traefik_binary_path }}/bin/{{ traefik_binary }}-{{ traefik_version }}'
+      dest: '{{ traefik_binary_path}}/bin/traefik'
       state: link
