@@ -1,61 +1,70 @@
+{# Main Section configuration#}
 {% for key, value in traefik_config.main_section.iteritems() %}
-{{ key }} = {{ value }}
+  {{ key }} = {{ value }}
 {% endfor %}
 
-
-{% if traefik_config.entry_points.http is defined or traefik_config.entry_points.https is defined %}
+{# Entry points configuration #}
+{% if traefik_config.entryPoints.http is defined or traefik_config.entryPoints.https is defined %}
   [entryPoints]
-  {% if traefik_config.entry_points.http is defined %}
+  {% if traefik_config.entryPoints.http is defined %}
     [entryPoints.http]
-    {% if traefik_config.entry_points.http.address is defined %}
-      address = {{ traefik_config.entry_points.http.address }}
+    {% if traefik_config.entryPoints.http.address is defined %}
+      address = {{ traefik_config.entryPoints.http.address }}
     {% endif %}
 
-    {% if traefik_config.entry_points.http.auth is defined %}
+    {% if traefik_config.entryPoints.http.auth is defined %}
     [entryPoints.http.auth.basic]
       users = [
-        {% for entry in traefik_config.entry_points.http.auth %}
+        {% for entry in traefik_config.entryPoints.http.auth %}
           "{{ entry }}",
         {% endfor %}
       ]
     {% endif %}
 
-    {% if traefik_config.entry_points.http.redirect is defined %}
+    {% if traefik_config.entryPoints.http.redirect is defined %}
     [entryPoints.http.redirect]
-      {% if traefik_config.entry_points.http.redirect.entry_point is defined %}
-        entryPoint = {{ traefik_config.entry_points.http.redirect.entry_point }}
+      {% if traefik_config.entryPoints.http.redirect.entryPoint is defined %}
+        entryPoint = {{ traefik_config.entryPoints.http.redirect.entryPoint }}
       {% endif %}
-      {% for regex in traefik_config.entry_points.http.redirect.regex %}
+      {% for regex in traefik_config.entryPoints.http.redirect.regex %}
         regex = {{ regex }}
-        replacement = {{ traefik_config.entry_points.http.redirect.replacement[loop.index0] }}
+        replacement = {{ traefik_config.entryPoints.http.redirect.replacement[loop.index0] }}
       {% endfor %}
     {% endif %}
   {% endif %}
 
-  {% if traefik_config.entry_points.https is defined %}
+  {% if traefik_config.entryPoints.https is defined %}
     [entryPoints.https]
-    {% if traefik_config.entry_points.https.address is defined %}
-      address = {{ traefik_config.entry_points.https.address}}
+    {% if traefik_config.entryPoints.https.address is defined %}
+      address = {{ traefik_config.entryPoints.https.address}}
     {% endif %}
 
     [entryPoints.https.tls]
-    {% if traefik_config.entry_points.https.cliet_ca_files is defined %}
-      ClientCAFiles = [{% for ca_file in traefik_config.entry_points.https.cliet_ca_files %}{{ ca_file}}{% if not loop.last %},{% endif %}{% endfor %}]
+    {% if traefik_config.entryPoints.https.clietCAFiles is defined %}
+      ClientCAFiles = [
+        {% for ca_file in traefik_config.entryPoints.https.clietCAFiles %}
+        {{ ca_file }},
+        {% endfor %}
+      ]
     {% endif %}
 
-    {% if traefik_config.entry_points.https.min_version is defined %}
-      MinVersion = {{ traefik_config.entry_points.https.min_version }}
+    {% if traefik_config.entryPoints.https.minVersion is defined %}
+      MinVersion = {{ traefik_config.entryPoints.https.minVersion }}
     {% endif %}
 
-    {% if traefik_config.entry_points.https.chiper_suites is defined %}
-      CipherSuites = [{% for cipher in traefik_config.entry_points.https.chiper_suites %}{{chiper}} {% if not loop.last %},{% endif %} {% endfor %}]
+    {% if traefik_config.entryPoints.https.chiperSuites is defined %}
+      CipherSuites = [
+        {% for cipher in traefik_config.entryPoints.https.chiperSuites %}
+          {{chiper}},
+        {% endfor %}
+      ]
     {% endif %}
 
-    {% if traefik_config.entry_points.https.certificates is defined %}
-      {% for certificate in traefik_config.entry_points.https.certificates %}
+    {% if traefik_config.entryPoints.https.certificates is defined %}
+      {% for certificate in traefik_config.entryPoints.https.certificates %}
         [[entryPoints.https.tls.certificates]]
-        CertFile = {{ certificate.cert_file }}
-        KeyFile = {{ certificate.key_file }}
+        CertFile = {{ certificate.CertFile }}
+        KeyFile = {{ certificate.KeyFile }}
       {% endfor %}
     {% endif %}
 
@@ -67,6 +76,7 @@
     address = ':80'
 {% endif %}
 
+{# Retry configuration #}
 {% if traefik_config.retry is defined %}
   [retry]
 
@@ -75,6 +85,7 @@
     {% endfor %}
 {% endif %}
 
+{# Lets enctrypt configuration #}
 {% if traefik_config.lets_encrypt is defined %}
   [acme]
 
@@ -93,27 +104,29 @@
 
 {% endif %}
 
+{# File configuration #}
 {% if traefik_config.file is defined %}
-[file]
-{% for key,value in traefik_config.file.iteritems() %}
-  {{ key }} = {{ value }}
-{% endfor %}
+  [file]
+  {% for key,value in traefik_config.file.iteritems() %}
+    {{ key }} = {{ value }}
+  {% endfor %}
 {% endif %}
 
+{# API Backend configuration #}
 {% if traefik_config.api_backend is defined %}
   [web]
   address = {{ traefik_config.api_backend.address }}
 
-  {% if traefik_config.api_backend.cert_file is defined %}
-    CertFile = {{ traefik_config.api_backend.cert_file }}
+  {% if traefik_config.api_backend.CertFile is defined %}
+    CertFile = {{ traefik_config.api_backend.CertFile }}
   {% endif %}
 
-  {% if traefik_config.api_backend.key_file is defined %}
-    KeyFile = {{ traefik_config.api_backend.key_file }}
+  {% if traefik_config.api_backend.KeyFile is defined %}
+    KeyFile = {{ traefik_config.api_backend.KeyFile }}
   {% endif %}
 
-  {% if traefik_config.api_backend.read_only is defined %}
-    ReadOnly = {{ traefik_config.api_backend.read_only }}
+  {% if traefik_config.api_backend.ReadOnly is defined %}
+    ReadOnly = {{ traefik_config.api_backend.ReadOnly }}
   {% endif %}
 
   {% if traefik_config.api_backend.auth_basic is defined %}
@@ -129,9 +142,22 @@
   [web.auth.digest]
   users = [
     {% for entry in traefik_config.api_backend.auth_digest %}
-      {{ entry }}
+      {{ entry }},
     {% endfor %}
   ]
   {% endif %}
 
+{% endif %}
+
+{# Docker configuration #}
+{% if traefik_config.docker is defined %}
+  {% for key, value in traefik_config.docker.iteritems() %}
+    {% if key is not equalto "tls" %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endfor %}
+
+  {% for key, value in traefik_config.docker.tls.iteritems() %}
+    {{ key }} = {{ value }}
+  {% endfor %}
 {% endif %}
