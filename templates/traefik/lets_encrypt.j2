@@ -1,0 +1,25 @@
+[acme]
+
+{# Common keys #}
+{% for key, value in traefik_config.lets_encrypt.iteritems() %}
+  {% if key is not equalto 'domains' %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Domain configuration #}
+{% for domain in traefik_config.lets_encrypt.domains %}
+  [[acme.domains]]
+
+    {% for key, value in domain.iteritems() %}
+      {% if value is string %}
+        {{ key }} = "{{ value }}"
+      {% else %}
+        {{ key }} = {{ value | to_json }}
+      {% endif %}
+    {% endfor %}
+{% endfor %}

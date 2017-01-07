@@ -1,0 +1,11 @@
+[file]
+
+{% for key, value in traefik_config.file_backend.iteritems() %}
+  {% if key != "template" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}

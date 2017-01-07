@@ -13,394 +13,96 @@
 # Endpoint configuration
 ################################################################
 {% if traefik_config.entryPoints.http is defined or traefik_config.entryPoints.https is defined %}
-  [entryPoints]
-  {% if traefik_config.entryPoints.http is defined %}
-    [entryPoints.http]
-    {% if traefik_config.entryPoints.http.address is defined %}
-      address = "{{ traefik_config.entryPoints.http.address }}"
-    {% endif %}
-
-    {% if traefik_config.entryPoints.http.auth is defined %}
-    [entryPoints.http.auth.basic]
-      users = [
-        {% for entry in traefik_config.entryPoints.http.auth %}
-          "{{ entry }}",
-        {% endfor %}
-      ]
-    {% endif %}
-
-    {% if traefik_config.entryPoints.http.redirect is defined %}
-    [entryPoints.http.redirect]
-      {% if traefik_config.entryPoints.http.redirect.entryPoint is defined %}
-        entryPoint = "{{ traefik_config.entryPoints.http.redirect.entryPoint }}"
-      {% endif %}
-      {% for regex in traefik_config.entryPoints.http.redirect.regex %}
-        regex = "{{ regex }}"
-        replacement = "{{ traefik_config.entryPoints.http.redirect.replacement[loop.index0] }}"
-      {% endfor %}
-    {% endif %}
-  {% endif %}
-
-  {% if traefik_config.entryPoints.https is defined %}
-    [entryPoints.https]
-    {% if traefik_config.entryPoints.https.address is defined %}
-      address = "{{ traefik_config.entryPoints.https.address}}"
-    {% endif %}
-
-    [entryPoints.https.tls]
-    {% if traefik_config.entryPoints.https.clietCAFiles is defined %}
-      ClientCAFiles = [
-        {% for ca_file in traefik_config.entryPoints.https.clietCAFiles %}
-        {{ ca_file }},
-        {% endfor %}
-      ]
-    {% endif %}
-
-    {% if traefik_config.entryPoints.https.minVersion is defined %}
-      MinVersion = "{{ traefik_config.entryPoints.https.minVersion }}"
-    {% endif %}
-
-    {% if traefik_config.entryPoints.https.chiperSuites is defined %}
-      CipherSuites = [
-        {% for cipher in traefik_config.entryPoints.https.chiperSuites %}
-          {{chiper}},
-        {% endfor %}
-      ]
-    {% endif %}
-
-    {% if traefik_config.entryPoints.https.certificates is defined %}
-      {% for certificate in traefik_config.entryPoints.https.certificates %}
-        [[entryPoints.https.tls.certificates]]
-        CertFile = "{{ certificate.CertFile }}"
-        KeyFile = "{{ certificate.KeyFile }}"
-      {% endfor %}
-    {% endif %}
-
-  {% endif %}
-
-{% else %}
-  [entryPoints]
-    [entryPoints.http]
-    address = ':80'
+  {% include "traefik/entry_points.j2" %}
 {% endif %}
 
 ################################################################
 # Retry configuration
 ################################################################
 {% if traefik_config.retry is defined %}
-  [retry]
-
-    {% for key, value in traefik_config.retry.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
+  {% include "traefik/retry.j2" %}
 {% endif %}
 
 ################################################################
 # Let's encrypt
 ################################################################
 {% if traefik_config.lets_encrypt is defined %}
-  [acme]
-
-  {% for key, value in traefik_config.lets_encrypt.iteritems() %}
-    {% if key is not equalto 'domains' %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {% for domain in traefik_config.lets_encrypt.domains %}
-    [[acme.domains]]
-      {% for key, value in domain.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-      {% endfor %}
-  {% endfor %}
-
+  {% include "traefik/lets_encrypt.j2" %}
 {% endif %}
 
-{# File configuration #}
-{% if traefik_config.file is defined %}
-  [file]
-  {% for key,value in traefik_config.file.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-  {% endfor %}
+################################################################
+# File Configuration
+################################################################
+{% if traefik_config.file_backend is defined %}
+  {% include "traefik/file.j2" %}
 {% endif %}
 
 ################################################################
 # API Backend configuration
 ################################################################
 {% if traefik_config.api_backends is defined %}
-  [web]
-  address = "{{ traefik_config.api_backends.address }}"
-
-  {% if traefik_config.api_backends.CertFile is defined %}
-    CertFile = "{{ traefik_config.api_backends.CertFile }}"
-  {% endif %}
-
-  {% if traefik_config.api_backends.KeyFile is defined %}
-    KeyFile = "{{ traefik_config.api_backends.KeyFile }}"
-  {% endif %}
-
-  {% if traefik_config.api_backends.ReadOnly is defined %}
-    ReadOnly = {{ traefik_config.api_backends.ReadOnly }}
-  {% endif %}
-
-  {% if traefik_config.api_backends.auth_basic is defined %}
-    [web.auth.basic]
-    users = [
-    {% for entry in traefik_config.api_backends.auth_basic %}
-      {{ entry }},
-    {% endfor %}
-    ]
-  {% endif %}
-
-  {% if traefik_config.api_backends.auth_digest %}
-  [web.auth.digest]
-  users = [
-    {% for entry in traefik_config.api_backends.auth_digest %}
-      {{ entry }},
-    {% endfor %}
-  ]
-  {% endif %}
-
+  {% include "traefik/api_backends.j2" %}
 {% endif %}
 
 ################################################################
 # Docker configuration backend
 ################################################################
 {% if traefik_config.docker is defined %}
-  {% for key, value in traefik_config.docker.iteritems() %}
-    {% if key is not equalto "tls" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {% for key, value in traefik_config.docker.tls.iteritems() %}
-    {{ key }} = {{ value }}
-  {% endfor %}
+  {% include "traefik/backends/docker.j2" %}
 {% endif %}
 
 ################################################################
 # Mesos/Marathon configuration backend
 ################################################################
 {% if traefik_config.marathon is defined %}
-  [marathon]
-
-  {# Common keys #}
-  {% for key, value in traefik_config.marathon.iteritems() %}
-    {% if key is not equalto "tls" or key is not equalto "auth" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {# Auth basic#}
-  {% if traefik_config.marathon.auth %}
-    {% for key, value in traefik_config.marathon.auth.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-
-  {# Tls #}
-  {% if traefik_config.marathon.tls %}
-    [marathon.TLS]
-    {% for key, value in traefik_config.marathon.tls.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+  {% include "traefik/backends/marathon.j2" %}
 {% endif %}
 
 ################################################################
 # Mesos configuration backend
 ################################################################
 {% if traefik_config.mesos is defined %}
-  [mesos]
-
-  {# Common keys #}
-  {% for key, value in traefik_config.mesos.iteritems() %}
-    {% if key is not equalto "tls" or key is not equalto "auth" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {# Tls #}
-  {% if traefik_config.mesos.tls %}
-    [mesos.TLS]
-    {% for key, value in traefik_config.mesos.tls.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+  {% include "traefik/backends/mesos.j2" %}
 {% endif %}
 
 ################################################################
 # Kubernetes Ingress configuration backend
 ################################################################
 {% if traefik_config.kubernetes is defined %}
-  [kubernetes]
-
-  {# Common keys #}
-  {% for key, value in traefik_config.kubernetes.iteritems() %}
-    {% if key is not equalto "namespaces" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {# Namespace #}
-  {% if traefik_config.kubernetes.namespaces is defined %}
-    namespaces = [
-      {% for value in traefik_config.kubernetes.namespaces %}
-        {{ value }},
-      {% endfor %}
-    ]
-  {% endif %}
-
+  {% include "traefik/backends/kubernetes.j2" %}
 {% endif %}
 
 ################################################################
 # Consul KV configuration backend
 ################################################################
 {% if traefik_config.consul is defined %}
-  [consul]
-
-  {# Common keys #}
-  {% for key, value in traefik_config.consul.iteritems() %}
-    {% if key is not equalto "tls" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {# Tls #}
-  {% if traefik_config.consul.tls %}
-    [consul.tls]
-    {% for key, value in traefik_config.consul.tls.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-
+  {% include "traefik/backends/consul.j2" %}
 {% endif %}
 
 ################################################################
 # Consul Catalog configuration backend
 ################################################################
 {% if traefik_config.consulCatalog is defined %}
-  [consulCatalog]
-  {% for key, value in traefik_config.consulCatalog.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-  {% endfor %}
+  {% include "traefik/backends/consulCatalog.j2" %}
 {% endif %}
 
 ################################################################
 # Etcd configuration backend
 ################################################################
 {% if traefik_config.etcd is defined %}
-  [etcd]
-
-  {# Common keys #}
-  {% for key, value in traefik_config.etcd.iteritems() %}
-    {% if key is not equalto "tls" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
-
-  {# Tls #}
-  {% if traefik_config.etcd.tls %}
-    [etcd.tls]
-    {% for key, value in traefik_config.etcd.tls.iteritems() %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-
+  {% include "traefik/backends/etcd.j2" %}
 {% endif %}
 
 ################################################################
 # Zookeeper configuration backend
 ################################################################
 {% if traefik_config.zookeeper is defined %}
-  [zookeeper]
-
-  {% for key, value in traefik_config.zookeeper.iteritems() %}
-    {% if value is string %}
-      {{ key }} = "{{ value }}"
-    {% else %}
-      {{ key }} = {{ value }}
-    {% endif %}
-  {% endfor %}
+  {% include "traefik/backends/zookeeper.j2" %}
 {% endif %}
 
 ################################################################
 # BoltDB configuration backend
 ################################################################
 {% if traefik_config.boltdb is defined %}
-  [boltdb]
-
-  {% for key, value in traefik_config.zookeeper.iteritems() %}
-    {% if key is not equalto "tls" %}
-      {% if value is string %}
-        {{ key }} = "{{ value }}"
-      {% else %}
-        {{ key }} = {{ value }}
-      {% endif %}
-    {% endif %}
-  {% endfor %}
+  {% include "traefik/backends/boltdb.j2" %}
 {% endif %}

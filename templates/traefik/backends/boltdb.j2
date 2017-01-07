@@ -1,0 +1,9 @@
+[boltdb]
+
+{% for key, value in traefik_config.zookeeper.iteritems() %}
+  {% if value is string %}
+    {{ key }} = "{{ value }}"
+  {% else %}
+    {{ key }} = {{ value }}
+  {% endif %}
+{% endfor %}

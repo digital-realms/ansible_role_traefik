@@ -1,0 +1,9 @@
+[retry]
+
+{% for key, value in traefik_config.retry.iteritems() %}
+  {% if value is string %}
+    {{ key }} = "{{ value }}"
+  {% else %}
+    {{ key }} = {{ value }}
+  {% endif %}
+{% endfor %}

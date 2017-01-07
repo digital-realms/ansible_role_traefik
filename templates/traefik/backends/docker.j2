@@ -1,0 +1,20 @@
+[docker]
+
+{# Common keys #}
+{% for key, value in traefik_config.docker.iteritems() %}
+  {% if key is not equalto "tls" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# TLS configuration #}
+{% if traefik_config.docker.tls is defined %}
+  [docker.tls]
+  {% for key, value in traefik_config.docker.tls.iteritems() %}
+    {{ key }} = {{ value }}
+  {% endfor %}
+{% endif %}

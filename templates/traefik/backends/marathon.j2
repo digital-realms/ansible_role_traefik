@@ -1,0 +1,32 @@
+[marathon]
+
+{# Common keys #}
+{% for key, value in traefik_config.marathon.iteritems() %}
+  {% if key != "tls" and key != "auth" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Auth basic #}
+{% if traefik_config.marathon.auth is defined %}
+  [marathon.basic]
+
+  httpBasicAuthUser = "{{ traefik_config.marathon.auth.user }}"
+  httpBasicPassword = "{{ traefik_config.marathon.auth.password }}"
+{% endif %}
+
+{# Tls #}
+{% if traefik_config.marathon.tls is defined %}
+  [marathon.TLS]
+  {% for key, value in traefik_config.marathon.tls.iteritems() %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endfor %}
+{% endif %}

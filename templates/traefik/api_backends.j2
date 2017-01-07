@@ -1,0 +1,32 @@
+[web]
+
+{# Common keys #}
+{% for key, value in traefik_config.api_backends.iteritems() %}
+  {% if key != 'auth_basic' and key != 'auth_digest' %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = "{{ value }}"
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Auth Basic #}
+{% if traefik_config.api_backends.auth_basic is defined %}
+  [web.auth.basic]
+  users = [
+    {% for entry in traefik_config.api_backends.auth_basic %}
+      {{ entry }},
+    {% endfor %}
+  ]
+{% endif %}
+
+{# Auth Digest #}
+{% if traefik_config.api_backends.auth_digest is defined %}
+  [web.auth.digest]
+  users = [
+    {% for entry in traefik_config.api_backends.auth_digest %}
+      {{ entry }},
+    {% endfor %}
+  ]
+{% endif %}

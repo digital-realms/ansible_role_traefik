@@ -11,3 +11,9 @@
     template:
       src: config.j2
       dest: '{{ traefik_binary_path }}/conf/conf.toml'
+
+  - name: ':: config :: Apply rules'
+    template:
+      src: '{{ traefik_config.file_backend.template }}'
+      dest: '{{ traefik_binary_path }}/conf/{{ traefik_config.file_backend.filename}}'
+    when: '{{ traefik_config.file_backend }}'

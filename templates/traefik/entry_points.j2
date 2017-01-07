@@ -1,0 +1,78 @@
+
+[entryPoints]
+
+{# Http configuration #}
+{% if traefik_config.entryPoints.http is defined %}
+  [entryPoints.http]
+
+  {# Address #}
+  {% if traefik_config.entryPoints.http.address is defined %}
+    address = "{{ traefik_config.entryPoints.http.address }}"
+  {% endif %}
+
+  {# Auth #}
+  {% if traefik_config.entryPoints.http.auth is defined %}
+  [entryPoints.http.auth.basic]
+    users = [
+      {% for entry in traefik_config.entryPoints.http.auth %}
+        "{{ entry }}",
+      {% endfor %}
+    ]
+  {% endif %}
+
+  {# Redirect #}
+  {% if traefik_config.entryPoints.http.redirect is defined %}
+    [entryPoints.http.redirect]
+
+    {% if traefik_config.entryPoints.http.redirect.entryPoint is defined %}
+      entryPoint = "{{ traefik_config.entryPoints.http.redirect.entryPoint }}"
+    {% endif %}
+
+    {% for regex in traefik_config.entryPoints.http.redirect.regex %}
+      regex = "{{ regex }}"
+      replacement = "{{ traefik_config.entryPoints.http.redirect.replacement[loop.index0] }}"
+    {% endfor %}
+  {% endif %}
+
+{% endif %}
+
+{# https configuration #}
+{% if traefik_config.entryPoints.https is defined %}
+  [entryPoints.https]
+
+  {# Address #}
+  {% if traefik_config.entryPoints.https.address is defined %}
+    address = "{{ traefik_config.entryPoints.https.address}}"
+  {% endif %}
+
+  {# TLS #}
+  [entryPoints.https.tls]
+  ClientCAFiles = [
+    {% for ca_file in traefik_config.entryPoints.https.ClientCAFiles %}
+    "{{ ca_file }}",
+    {% endfor %}
+  ]
+
+  {# Min version #}
+  {% if traefik_config.entryPoints.https.minVersion is defined %}
+    MinVersion = "{{ traefik_config.entryPoints.https.minVersion }}"
+  {% endif %}
+
+  {# Chiper suits #}
+  {% if traefik_config.entryPoints.https.chiperSuites is defined %}
+    CipherSuites = [
+      {% for cipher in traefik_config.entryPoints.https.chiperSuites %}
+        {{chiper}},
+      {% endfor %}
+    ]
+  {% endif %}
+
+  {% if traefik_config.entryPoints.https.certificates is defined %}
+    {% for certificate in traefik_config.entryPoints.https.certificates %}
+      [[entryPoints.https.tls.certificates]]
+      CertFile = "{{ certificate.CertFile }}"
+      KeyFile = "{{ certificate.KeyFile }}"
+    {% endfor %}
+  {% endif %}
+
+{% endif %}

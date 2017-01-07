@@ -1,0 +1,24 @@
+[mesos]
+
+{# Common keys #}
+{% for key, value in traefik_config.mesos.iteritems() %}
+  {% if key != "tls" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Tls #}
+{% if traefik_config.mesos.tls %}
+  [mesos.TLS]
+  {% for key, value in traefik_config.mesos.tls.iteritems() %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endfor %}
+{% endif %}

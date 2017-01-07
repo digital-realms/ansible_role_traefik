@@ -1,0 +1,21 @@
+[kubernetes]
+
+{# Common keys #}
+{% for key, value in traefik_config.kubernetes.iteritems() %}
+  {% if key != "namespaces" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Namespace #}
+{% if traefik_config.kubernetes.namespaces is defined %}
+  namespaces = [
+    {% for value in traefik_config.kubernetes.namespaces %}
+      {{ value }},
+    {% endfor %}
+  ]
+{% endif %}

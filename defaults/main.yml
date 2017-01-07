@@ -7,7 +7,7 @@ traefik_config_file: 'traefik.toml'
 traefik_sysd_runlevel: 'multi-user.target'
 
 default_traefik_config:
-   main_section:
+  main_section:
     graceTimeOut: 10
     debug: false
     checkNewVersion: false
@@ -17,6 +17,7 @@ default_traefik_config:
     ProvidersThrottleDuration: '2'
     MaxIdleConnsPerHost: 200
     InsecureSkipVerify: true
-    # defaultEntryPoints: ['http', 'https']
+  file_backend:
+    filename: 'rules.toml'
 
 traefik_config: {}

@@ -1,0 +1,24 @@
+[consul]
+
+{# Common keys #}
+{% for key, value in traefik_config.consul.iteritems() %}
+  {% if key != "tls" %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{# Tls #}
+{% if traefik_config.consul.tls %}
+  [consul.tls]
+  {% for key, value in traefik_config.consul.tls.iteritems() %}
+    {% if value is string %}
+      {{ key }} = "{{ value }}"
+    {% else %}
+      {{ key }} = {{ value }}
+    {% endif %}
+  {% endfor %}
+{% endif %}
